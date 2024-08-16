@@ -21,13 +21,20 @@ model User {
   lastName     String
   profileImage String
   products     Product[]
+  role         Role      @default(USER)
 }
 
 model Product {
-  id     String  @id @default(uuid())
-  name   String
-  image  String
-  price  String
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+  id          String  @id @default(uuid())
+  name        String
+  image       String
+  price       String
+  description String
+  User        User?   @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+enum Role {
+  USER
+  ADMIN
 }
