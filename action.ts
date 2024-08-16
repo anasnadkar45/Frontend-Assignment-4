@@ -3,6 +3,7 @@
 import prisma from "@/app/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Role } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export type State = {
@@ -41,8 +42,8 @@ const productSchema = z.object({
         .min(1, { message: 'Price is required' }),
 });
 
-export async function addProduct(prevState: any, formData: FormData){
-    const {getUser} = getKindeServerSession();
+export async function addProduct(prevState: any, formData: FormData) {
+    const { getUser } = getKindeServerSession();
     const user = await getUser();
     if (!user) {
         throw new Error('Something went wrong');
@@ -50,7 +51,7 @@ export async function addProduct(prevState: any, formData: FormData){
 
     const role = await getUserRole(user.id);
 
-    if(role !== Role.ADMIN){
+    if (role !== Role.ADMIN) {
         const state: State = {
             status: "error",
             message: "You do not have the necessary permissions to create a Product.",
@@ -79,12 +80,28 @@ export async function addProduct(prevState: any, formData: FormData){
     }
 
     const data = await prisma.product.create({
-        data:{
+        data: {
             userId: user.id,
             name: validateFields.data.name,
             description: validateFields.data.description,
             price: validateFields.data.price,
             image: validateFields.data.image
         }
-    })
+    });
+
+    revalidatePath('/');
+    if (data) {
+        return {
+            status: "success",
+            message: "Your Product has been Added successfully",
+        };
+
+    }
+    
+    const state: State = {
+        status: "success",
+        message: "Your product has been added successfully",
+    };
+
+    return state;
 }
