@@ -20,7 +20,7 @@ import { FilePlus} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { addProduct, State } from "../../../../action"
 import { UploadDropzone } from "@/app/lib/uploadthing"
-import { SubmitButton } from "@/app/components/SubmitButtons"
+import { SubmitButton } from "@/app/components/common/SubmitButtons"
 
 export default function CreateProduct() {
     const initialState: State = { message: "", status: undefined };
