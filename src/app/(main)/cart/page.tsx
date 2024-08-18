@@ -3,6 +3,7 @@ import CheckOutButton from '@/app/components/cart/CheckOutButton';
 import prisma from '@/app/lib/db';
 import { Button } from '@/components/ui/button';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { unstable_noStore } from 'next/cache';
 import { toast } from 'sonner';
 
 async function getCartData(userId: string) {
@@ -31,6 +32,7 @@ async function getCartData(userId: string) {
 }
 
 const page = async () => {
+    unstable_noStore();
     const { getUser } = getKindeServerSession();
     const user = await getUser();
     const CartData = await getCartData(user?.id as string);

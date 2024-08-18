@@ -1,8 +1,6 @@
 import React from 'react'
 import DeleteFromCart from './DeleteFromCart'
-import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { Minus, Plus } from 'lucide-react';
 import CartQuantity from './CartQuantity';
 
 interface productItemProps {
