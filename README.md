@@ -26,7 +26,7 @@ For a comprehensive guide on the assignment, visit [here](https://docs.google.co
   cd Frontend-Assignment-4
   ```
 #### 3. Install Dependencies
-  Open the `Profile.fyi-Assignment-E-commerce-Application` directory in your preferred code editor or IDE.
+  Open the `Frontend-Assignment-4.git` directory in your preferred code editor or IDE.
   
   Open a terminal for the directory, then run the following command in the terminal to install all the dependencies.
   ```bash
