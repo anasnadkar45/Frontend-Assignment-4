@@ -1,8 +1,6 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import prisma from "./lib/db";
 import { unstable_noStore } from "next/cache";
-import CreateProduct from "./(main)/forms/CreateProduct";
-import Navbar from "./components/common/Navbar";
 import ProductCard from "./components/products/ProductCard";
 
 async function getProducts() {
@@ -26,24 +24,18 @@ export default async function Home() {
 
   const productData = await getProducts();
   return (
-    <main className="w-full">
-      <div className="max-w-[1380px] w-full mx-auto mb-10 z-10 px-3 space-y-5 py-3">
-        <div className="flex justify-between items-center">
-          <h1>Ecommerce</h1>
-          {
-            user?.email === "anasnadkar23@gmail.com" && (
-              <CreateProduct />
-            )
-          }
-        </div>
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
-          {
-            productData.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          }
-        </div>
+    <div className="max-w-[1250px] w-full mx-auto mb-10 z-10 px-3 space-y-5 py-3 mt-20">
+      <div className="max-w-[1000px] mx-auto mt-2 text-center">
+        <h1 className="text-4xl font-bold">Upgrade Your Lifestyle with Premium Products</h1>
+        <p className="text-muted">Whether you're looking for the latest gadgets or timeless fashion, our store has everything you need in one place.</p>
       </div>
-    </main>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+        {
+          productData.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))
+        }
+      </div>
+    </div>
   );
 }

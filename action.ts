@@ -4,7 +4,8 @@ import prisma from "@/app/lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { parse } from "path";
+import { date, z } from "zod";
 
 export type State = {
     status: 'error' | 'success' | undefined;
@@ -97,11 +98,152 @@ export async function addProduct(prevState: any, formData: FormData) {
         };
 
     }
-    
+
     const state: State = {
         status: "success",
         message: "Your product has been added successfully",
     };
 
+    return state;
+}
+
+// Add to cart
+const addToCartSchema = z.object({
+    productId: z.string().min(1, { message: 'Product ID is required' }),
+    quantity: z.number().min(1).optional(),
+});
+
+export async function addToCart(prevState: any, formData: FormData) {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+    if (!user) {
+        throw new Error('User not authenticated');
+    }
+
+    const productId = formData.get('productId') as string;
+    const additionalQuantity = formData.get('quantity')
+        ? parseInt(formData.get('quantity') as string)
+        : 1;
+
+    const validateFields = addToCartSchema.safeParse({
+        productId,
+        quantity: additionalQuantity,
+    });
+
+    if (!validateFields.success) {
+        const state: State = {
+            status: "error",
+            errors: validateFields.error.flatten().fieldErrors,
+            message: "There was an issue with your input.",
+        };
+        console.log(state);
+        return state;
+    }
+
+    let cart = await prisma.cart.findFirst({
+        where: {
+            userId: user.id,
+        }
+    });
+
+    if (!cart) {
+        cart = await prisma.cart.create({
+            data: {
+                userId: user.id,
+            }
+        });
+    }
+
+    const existingCartItem = await prisma.cartItem.findFirst({
+        where: {
+            cartId: cart.id,
+            productId: productId,
+        }
+    });
+
+    if (existingCartItem) {
+        const newQuantity = existingCartItem.quantity + additionalQuantity;
+        await prisma.cartItem.update({
+            where: {
+                id: existingCartItem.id,
+            },
+            data: {
+                quantity: newQuantity,
+            }
+        });
+    } else {
+        await prisma.cartItem.create({
+            data: {
+                cartId: cart.id,
+                productId: productId,
+                quantity: additionalQuantity,
+            }
+        });
+    }
+
+    revalidatePath('/cart');
+
+    const state: State = {
+        status: "success",
+        message: "Product added to cart successfully",
+    };
+    return state;
+}
+
+const deleteFromCartSchema = z.object({
+    productId: z.string().min(1, { message: 'Product ID is required' }),
+});
+
+export async function deleteFromCart(prevState: any, formData: FormData) {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+    if (!user) {
+        throw new Error('User not authenticated');
+    }
+
+    const productId = formData.get('productId') as string;
+
+    const validateFields = deleteFromCartSchema.safeParse({
+        productId,
+    });
+
+    if (!validateFields.success) {
+        const state: State = {
+            status: "error",
+            errors: validateFields.error.flatten().fieldErrors,
+            message: "There was an issue with your input.",
+        };
+        console.log(state);
+        return state;
+    }
+
+    const cart = await prisma.cart.findFirst({
+        where: {
+            userId: user.id,
+        }
+    });
+
+    if (!cart) {
+        const state: State = {
+            status: "error",
+            message: "No cart found for the user.",
+        };
+        console.log(state);
+        return state;
+    }
+
+    await prisma.cartItem.deleteMany({
+        where: {
+            cartId: cart.id,
+            productId: productId,
+        }
+    });
+
+    revalidatePath('/cart');
+
+    const state: State = {
+        status: "success",
+        message: "Product removed from cart successfully",
+    };
     return state;
 }

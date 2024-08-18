@@ -1,3 +1,4 @@
+import AddToCart from "@/app/components/products/AddToCart";
 import prisma from "@/app/lib/db";
 import { Button } from "@/components/ui/button";
 import { unstable_noStore as noStore } from "next/cache";
@@ -19,10 +20,6 @@ async function getData(id: string) {
     return data;
 }
 
-interface priceProp {
-    price: number;
-}
-
 export default async function ProductPage({
     params,
 }: {
@@ -30,22 +27,25 @@ export default async function ProductPage({
 }) {
     noStore();
     const data = await getData(params.id);
+    if (!data) {
+        return <div>Product not found</div>;
+    }
     const price = parseFloat(data?.price || "0");
     const discountedPrice = Math.floor(price * 0.9);
 
     return (
-        <section className="max-w-[1380px] w-full mx-auto mb-10 px-3 space-y-5 py-3 grid grid-cols-1 md:grid-cols-2 gap-5">
+        <section className="max-w-[1250px] w-full mx-auto mb-10 px-3 space-y-5 py-3 mt-20 grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="block relative w-full h-[400px] md:h-[600px]">
                 <Image
                     alt="Product image"
                     src={data?.image as string}
                     layout="fill"
-                    className="object-cover w-full h-full rounded-lg border"
+                    className="object-cover w-full rounded-lg border"
                 />
             </div>
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col gap-4 justify-between rounded-md bg-white p-4 shadow-md">
                 <div>
-                    <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 sm:text-3xl">
+                    <h1 className="text-2xl font-extrabold text-gray-900 md:text-6xl">
                         {data?.name}
                     </h1>
                     <p className="mt-2 text-muted-foreground">{data?.description}</p>
@@ -54,8 +54,8 @@ export default async function ProductPage({
                     </h1>
                 </div>
                 <div className="space-y-2 mt-5">
+                    <AddToCart productId={data?.id as string} text="Add To Cart" />
                     <Button className="w-full">Checkout Now</Button>
-                    <Button variant={"outline"} className="w-full">Add To Cart</Button>
                 </div>
             </div>
         </section>
