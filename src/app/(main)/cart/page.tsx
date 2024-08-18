@@ -1,5 +1,4 @@
 import CartItemCard from '@/app/components/cart/CartItemCard';
-import CheckOutButton from '@/app/components/cart/CheckOutButton';
 import prisma from '@/app/lib/db';
 import { Button } from '@/components/ui/button';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
@@ -82,7 +81,7 @@ const page = async () => {
                         <hr className="my-4"/>
                         <p className="text-lg font-bold">Total: ${total.toFixed(2)}</p>
                     </div>
-                    <CheckOutButton />
+                    <Button>Checkout Now</Button>
                 </div>
             </div>
         </div>
