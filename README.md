@@ -18,12 +18,22 @@ For a comprehensive guide on the assignment, visit [here](https://docs.google.co
 #### 1. Clone the Repository.
   Open your terminal and clone the repository using -
   ```bash
-  git clone 
+  git clone https://github.com/anasnadkar45/Frontend-Assignment-4.git
   ```
-#### 2. Install Dependencies
+#### 2. Start the Application
+  Run the application in development mode -
+  ```bash
+  cd Frontend-Assignment-4
+  ```
+#### 3. Install Dependencies
   Open the `Profile.fyi-Assignment-E-commerce-Application` directory in your preferred code editor or IDE.
   
   Open a terminal for the directory, then run the following command in the terminal to install all the dependencies.
   ```bash
   npm install
+  ```
+#### 4. Start the Application
+  Run the application in development mode -
+  ```bash
+  npm run dev
   ```
